@@ -60,23 +60,54 @@ CREATE TABLE sales
   CONSTRAINT fk_customer_id FOREIGN KEY(customer_id) REFERENCES dbo.customer(customer_id)
 )
 
-BULK INSERT dbo.sales
-FROM 'D:\01. Desktop\LeapFrog\sql_learn\sales.csv'
-WITH (
-  FIRSTROW = 2,
-  FIELDTERMINATOR = ',',
-  ROWTERMINATOR ='\n'
-)
 
-select *from sales
 
-INSERT INTO dbo.customer([user_name],first_name, last_name, country, town, address, active)
-VALUES('jvn_dhl','Jeevan','Dahal','Nepal','','','Y'),
-('prm_gtm','Pramod','Gautam','Nepal','','','Y'),
-('jwn_nrl','Jiwan','Niroula','Nepal','','','Y'),
-('rzn_rai','Raazan','Rai','Nepal','','','Y'),
-('tej_prj','Tej','Parajuli','Nepal','','','Y');
+SELECT *
+FROM   sales
 
+INSERT INTO dbo.customer
+            ([user_name],
+             first_name,
+             last_name,
+             country,
+             town,
+             address,
+             active)
+VALUES     ('jvn_dhl',
+            'Jeevan',
+            'Dahal',
+            'Nepal',
+            '',
+            '',
+            'Y'),
+            ('prm_gtm',
+             'Pramod',
+             'Gautam',
+             'Nepal',
+             '',
+             '',
+             'Y'),
+            ('jwn_nrl',
+             'Jiwan',
+             'Niroula',
+             'Nepal',
+             '',
+             '',
+             'Y'),
+            ('rzn_rai',
+             'Raazan',
+             'Rai',
+             'Nepal',
+             '',
+             '',
+             'Y'),
+            ('tej_prj',
+             'Tej',
+             'Parajuli',
+             'Nepal',
+             '',
+             '',
+             'Y'); 
 
 INSERT INTO dbo.product(product_name, description, price, mrp, pieces_per_cASE, weight_per_piece, uom, brand, category, tax_percent, active, created_by, created_date, updated_by, updated_date)
 VALUES
@@ -636,77 +667,90 @@ VALUES
 
 
 --Select all products with brand Cacti Plus
-SELECT* FROM product
-WHERE brand='Cacti Plus'
-
+SELECT*
+FROM   product
+WHERE  brand = 'Cacti Plus'
 
 --Count of total products with product category=Skin Care
-
-select COUNT (*) from product
-where category ='Skin Care'
+SELECT Count (*)
+FROM   product
+WHERE  category = 'Skin Care'
 
 --Count of total products with MRP more than 100
-
-select COUNT (*) from product
-where mrp >100
+SELECT Count (*)
+FROM   product
+WHERE  mrp > 100
 
 --Count of total products with product category=Skin Care and MRP more than 100
-
-select COUNT (*) from product
-where category= 'Skin Care' and mrp > 100
+SELECT Count (*)
+FROM   product
+WHERE  category = 'Skin Care'
+       AND mrp > 100
 
 --Brandwise product count
-
-select product.brand, count (product.product_id) from product	
-group by brand
+SELECT product.brand,
+       Count (product.product_id)
+FROM   product
+GROUP  BY brand
 
 --Brandwise as well as Active/Inactive Status wise product count
-
-select product.brand,
-	sum(case when active = 'Y' then 1 else 0 end) as active,
-	sum(case when active = 'N' then 1 else 0 end) as inactive,
-	COUNT(*) AS totals
-from product
-group by brand
-
+SELECT product.brand,
+       Sum(CASE
+             WHEN active = 'Y' THEN 1
+             ELSE 0
+           END) AS active,
+       Sum(CASE
+             WHEN active = 'N' THEN 1
+             ELSE 0
+           END) AS inactive,
+       Count(*) AS totals
+FROM   product
+GROUP  BY brand
 
 --Display all columns with Product category in Skin Care or Hair Care
-
-select * from product
-where category = 'Skin Care' or category = 'Hair Care'
+SELECT *
+FROM   product
+WHERE  category = 'Skin Care'
+        OR category = 'Hair Care'
 
 --Display   all   columns   with   Product   category=Skin   Care   and Brand=Pondy, and MRP more than 100
-
-select * from product
-where mrp>100 and (category='Skin Care' and brand='Pondy');
+SELECT *
+FROM   product
+WHERE  mrp > 100
+       AND ( category = 'Skin Care'
+             AND brand = 'Pondy' );
 
 --Display   all   columns   with   Product   category   ="Skin   Care"   or Brand=Pondy, and MRP more than 100
-
-select * from product
-where mrp>100 and (category='Skin Care' or brand='Pondy');
+SELECT *
+FROM   product
+WHERE  mrp > 100
+       AND ( category = 'Skin Care'
+              OR brand = 'Pondy' );
 
 --Display all product names only with names starting from letter P
-
-select * from product
-where product_name like 'P%'
+SELECT *
+FROM   product
+WHERE  product_name LIKE 'P%'
 
 --Display  all product  names only with names Having letters Bar  in Between
+SELECT *
+FROM   product
+WHERE  product_name LIKE '%Bar%'
 
-select * from product
-where product_name like '%Bar%'
-
-
-select * from sales
-
+SELECT *
+FROM   sales
 
 --Sales of those products which have been sold in more than two quantity in a bill
-select * from sales
-where qty > 2
+SELECT *
+FROM   sales
+WHERE  qty > 2
 
 --Sales of those products which have been sold in more than two quantity throughout the bill
-select product_id, SUM(qty) quantity from sales 
-group by product_id having SUM(qty) > 2
-
+SELECT product_id,
+       Sum(qty) quantity
+FROM   sales
+GROUP  BY product_id
+HAVING Sum(qty) > 2
 
 /*
 Create a new table with columns username and birthday, and dump data from dates file. Convert it to .csv format if required.
@@ -716,35 +760,37 @@ Birth month
 Weekday
 Find the current age of all people
 */
-
-create table birthday(
-    name varchar(30),
-	birthdate date
-)
-
-bulk insert dbo.people
-from 'D:\01. Desktop\LeapFrog\sql_learn\dates.csv'
-with (
-  firstrow = 2,
-  fieldterminator = ',',
-  rowterminator = '\n'
+CREATE TABLE birthday
+  (
+     NAME      VARCHAR(30),
+     birthdate DATE
   )
 
+-- file path problem
+BULK INSERT dbo.people
+  FROM ''
+  WITH
+    (
+      firstrow = 2,
+      fieldterminator = ',',
+      rowterminator = '\n'
+    )
 --no of people sharing Birth date
+SELECT Count(NAME)
+FROM   birthday
+WHERE  birthdate IN (SELECT birthdate
+                     FROM   birthday
+                     GROUP  BY birthdate
+                     HAVING Count(birthdate) > 1)
 
-select COUNT(name) from birthday
-where birthdate IN (
-  select birthdate FROM birthday
-  group by birthdate
-  having COUNT(birthdate) > 1
-)
+SELECT birthdate,
+       Month(birthdate) birthmonth
+FROM   birthday
 
-select birthdate,
-       MONTH(birthdate) birthmonth
-from birthday
+SELECT Count(NAME),
+       Datename(weekday, Getdate()) AS WEEKDAY
+FROM   birthday
 
-select COUNT(name) ,
-    DATENAME(weekday, GETDATE()) as WEEKDAY
-from birthday
-select *, DATEDIFF(year, birthdate, GETDATE()) Age
-from birthday
+SELECT *,
+       Datediff(year, birthdate, Getdate()) Age
+FROM   birthday 
