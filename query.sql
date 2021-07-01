@@ -667,7 +667,7 @@ VALUES
 
 
 --Select all products with brand Cacti Plus
-SELECT*
+SELECT *
 FROM   product
 WHERE  brand = 'Cacti Plus'
 
