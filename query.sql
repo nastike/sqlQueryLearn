@@ -636,8 +636,8 @@ VALUES
 
 
 --Select all products with brand Cacti Plus
-select * from product
-where brand='Cacti Plus'
+SELECT* FROM product
+WHERE brand='Cacti Plus'
 
 
 --Count of total products with product category=Skin Care
